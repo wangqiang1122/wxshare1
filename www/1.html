@@ -4,11 +4,39 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 <body>
 我是一
 </body>
 <script>
+    // 获取code值
+    var str = '?code=CODE&state=STATE';
+    var arrs = window.location.search.slice(1).split('&');
+    function urlVal(str) {
+        var obj = {}
+        var arrs = str.slice(1).split('&');
+        console.log(arrs)
+        for (var a = 0; a<arrs.length;a++) {
+            console.log(arrs[a])
+            var t = arrs[a].split('=');
+            console.log(t)
+             obj[t[0]] = t[1]
+        }
+        return obj
+    }
+    // urlVal(str)
+    var code = urlVal(str).code; // code 码
+    console.log(code);
+    console.log(axios)
+    axios.get('/user?ID=12345')
+        .then(function (response) {
+            console.log(response);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
 
 </script>
 </html>
