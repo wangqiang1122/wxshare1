@@ -2,41 +2,114 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
     <title>Title</title>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
 </head>
 <body>
 我是一
+<div>code: <span id="code"></span></div>
+<div>access_token: <span id="token"></span></div>
+<div>openid: <span id="openid"></span></div>
+<div>refresh_token: <span id="refreshToken"></span></div>
+<div>scope: <span id="scope"></span></div>
+
+
+<div>个人信息: <span id="user"></span></div>
+
+<div>token信息: <span id="tokenInfo"></span></div>
+
+<div>tokenurl: <span id="tokenurl"></span></div>
+
+<div>tokenerror: <span id="tokenerror"></span></div>
+
+
 </body>
 <script>
+
+    var vConsole = new VConsole();
+
+    var appid = 'wx7dbce6d1fa7ed00d';
+    var secret = '8cd9cb9b72aa36e27ba30d5c8b01ced8';
+    var codestr = document.getElementById('code');
+    var token = document.getElementById('token');
+    var openid = document.getElementById('openid');
+    var refreshToken = document.getElementById('refreshToken');
+    var scope = document.getElementById('scope');
+    var user = document.getElementById('user');
+    var tokenInfo = document.getElementById('tokenInfo');
+    var tokenurl = document.getElementById('tokenurl');
+
+    var tokenerror = document.getElementById('tokenerror');
+
+
     // 获取code值
     var str = '?code=CODE&state=STATE';
     var arrs = window.location.search.slice(1).split('&');
     function urlVal(str) {
         var obj = {}
         var arrs = str.slice(1).split('&');
-        console.log(arrs)
         for (var a = 0; a<arrs.length;a++) {
-            console.log(arrs[a])
             var t = arrs[a].split('=');
-            console.log(t)
              obj[t[0]] = t[1]
         }
         return obj
     }
     // urlVal(str)
-    var code = urlVal(str).code; // code 码
-    console.log(code);
-    console.log(axios)
-    axios.get('/user?ID=12345')
+    var val = urlVal(window.location.search); // code 码
+    codestr.innerHTML = val.code;
+
+    // 把code传给后台 获得个人信息
+    axios.get('http://www.888web888.com/Waccesstoken?code='+code)
         .then(function (response) {
-            console.log(response);
+            tokenInfo.innerHTML = JSON.stringify(response.data);
         })
         .catch(function (error) {
-            console.log(error);
+            tokenerror.innerHTML = error
+        });
+    console.log(window.location.href);
+    var href = window.location.href;
+    // 请求分享初始化数据接口
+    console.log('http://www.888web888.com/share/wx?code='+ urlVal(window.location.search).code+'&state='+urlVal(window.location.search).state)
+    axios.get('http://www.888web888.com/share/wx?code='+val.code+'&state'+).then(function (val) {
+        console.log(val.data)
+        wx.config({
+            debug: alert, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wx7dbce6d1fa7ed00d', // 必填，公众号的唯一标识
+            timestamp: val.data.timestamp, // 必填，生成签名的时间戳
+            nonceStr: val.data.nonceStr, // 必填，生成签名的随机串
+            signature: val.data.signature,// 必填，签名
+            jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData'] // 必填，需要使用的JS接口列表
         });
 
+        wx.ready(function(){
+            wx.checkJsApi({
+                jsApiList: ['updateAppMessageShareData','updateTimelineShareData'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+                success: function(res) {
+                    // 以键值对的形式返回，可用的api值true，不可用为false
+                    // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
+                    console.log('ready成功')
+                    console.log(res)
+                }
+            });
 
+            wx.updateAppMessageShareData({
+                title: 'dadadda', // 分享标题
+                desc: 'dadadsad', // 分享描述
+                link: 'http://www.888web888.com/1.html', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                imgUrl: './img/default_car.png', // 分享图标
+                success: function () {
+                    // 设置成功
+                    console.log('设置成功')
+                }
+            })
+        });
+        wx.error(function (err) {
+            console.log('失败')
+            console.log(err);
+        })
+    })
 </script>
 </html>

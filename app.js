@@ -7,12 +7,16 @@ const https = require('https');
 const url = require('url');
 var Router = require('koa-router');
 var router = new Router();
+const routerShare = require('./router/shareRouter');
 let accesstoken = '';
 server.listen(80);
 // router
-server.use(router.routes())
+server.use(router.routes()).use(router.allowedMethods());
+// routerShare
+server.use(routerShare.routes()).use(routerShare.allowedMethods());
 
-router.get('/token', function (ctx) {
+
+router.get('/token', async function (ctx) {
     const { query } = ctx;
     const { echostr } = query;
     // // 对签名进行字典排序
@@ -30,6 +34,19 @@ router.get('/token', function (ctx) {
     }  else {
         console.log(validator.check(query))
     }
+});
+
+router.get('/Waccesstoken',async (ctx)=>{
+    const { query } = ctx;
+    const { code } = query;
+    ctx.status = 200;
+    ctx.body = await getuser(code)
+    // getuser(code).then((val)=>{
+    //     console.log('我是'+JSON.stringify(val));
+    //     console.log(ctx)
+    //     ctx.body = val;
+    //     // r.body = val;
+    // })
 });
 // token 获取
 // const token_url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${Wxconfig.appID}&secret=${Wxconfig.appsecret}`;
@@ -51,13 +68,23 @@ router.get('/token', function (ctx) {
 // });
 // req.write('');
 // req.end();
-async function accessToken() {
-    accesstoken = await validator.getAccessToken();
-    console.log(accesstoken)
 
+
+
+// async function accessToken() {
+//     accesstoken = await validator.getAccessToken();
+//     console.log(accesstoken)
+//     return new Promise((resolve)=>{
+//         resolve(accesstoken)
+//     })
+// }
+// accessToken();
+
+async function getuser(code) {
+    let a = await validator.getAuthorization(code);
+    console.log(a)
+    return a
 }
-accessToken();
-
 
 
 
