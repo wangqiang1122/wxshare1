@@ -9,8 +9,8 @@ router.get('/wx', async (ctx,next)=>{
     let acctoken = await validator.getAccessToken();
     let nonceStr = 'Wm3WZYTPz0wzccnW';
     let timestamp = Math.round(new Date().getTime()/1000);
-    let url = ctx.query.url;
-    console.log(url)
+    console.log(ctx.query)
+    let url = `http://www.888web888.com/1.html?code=${ctx.query.code}&state=${ctx.query.state}`;
     let ticket = await new Promise((resolve)=>{
         request.get(`https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${acctoken.access_token}&type=jsapi`,function (error, response, body) {
             resolve(JSON.parse(response.body))
