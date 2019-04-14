@@ -14,9 +14,10 @@ router.get('/wx', async (ctx,next)=>{
     let ticket = await new Promise((resolve)=>{
         request.get(`https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${acctoken.access_token}&type=jsapi`,function (error, response, body) {
             resolve(JSON.parse(response.body))
+            console.log(error)
         });
     });
-    console.log(ticket['ticket'])
+    console.log('ticket'+JSON.stringify(ticket)+'-------')
     let str = `jsapi_ticket=${ticket['ticket']}&noncestr=${nonceStr}&timestamp=${timestamp}&url=${url}`;
     let hash = crypto.createHash('sha1');
     console.log(str)

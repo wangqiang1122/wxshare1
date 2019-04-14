@@ -6,6 +6,7 @@ const url = require('url');
 const token_url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${Wxconfig.appID}&secret=${Wxconfig.appsecret}`;
 const request = require('request');
 let AccessToken = ''; // 缓存token用
+let timeAccess = 0; // 时间
 // 网络授权token
 
 exports.check = function (query) {
@@ -24,9 +25,13 @@ exports.check = function (query) {
 // 获取token
 exports.getAccessToken = function () {
     return new Promise((resolve, reject)=>{
-        next(resolve)
+        let tiem1 = new Date().getTime();
+        next(resolve);
+        console.log(timeAccess)
+        console.log(tiem1-timeAccess);
         function next(resolve) {
-            if (AccessToken!=='') {
+            if (timeAccess!==0&&((tiem1-timeAccess)<(6000*1000))) {
+                console.log('我用的缓存')
                 resolve(AccessToken)
             } else {
                 ajax()
@@ -37,14 +42,17 @@ exports.getAccessToken = function () {
                             arr.push(str)
                         });
                         res.on('end',()=>{
+                            console.log('执行了')
                             let buffer = Buffer.concat(arr);
                             AccessToken=(JSON.parse(buffer.toString()));
-                            next(resolve)
+                            resolve(AccessToken);
+                            timeAccess = new Date().getTime();
                         })
                     });
                     req.on('error',function (err) {
                         ajax();
-                        console.log(err)
+                        console.log(err);
+                        console.log('过期了')
                         reject(err);
                     });
                     req.write('');

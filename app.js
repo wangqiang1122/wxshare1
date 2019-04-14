@@ -82,7 +82,6 @@ router.get('/Waccesstoken',async (ctx)=>{
 
 async function getuser(code) {
     let a = await validator.getAuthorization(code);
-    console.log(a)
     return a
 }
 
