@@ -29,23 +29,27 @@ exports.getAccessToken = function () {
             if (AccessToken!=='') {
                 resolve(AccessToken)
             } else {
-                let req = https.request(url.parse(token_url),(res)=>{
-                    let arr = [];
-
-                    res.on('data',(str)=>{
-                        arr.push(str)
+                ajax()
+                function ajax() {
+                    let req = https.request(url.parse(token_url),(res)=>{
+                        let arr = [];
+                        res.on('data',(str)=>{
+                            arr.push(str)
+                        });
+                        res.on('end',()=>{
+                            let buffer = Buffer.concat(arr);
+                            AccessToken=(JSON.parse(buffer.toString()));
+                            next(resolve)
+                        })
                     });
-                    res.on('end',()=>{
-                        let buffer = Buffer.concat(arr);
-                        AccessToken=(JSON.parse(buffer.toString()));
-                        next(resolve)
-                    })
-                });
-                req.on('error',function (err) {
-                    console.log(err)
-                });
-                req.write('');
-                req.end();
+                    req.on('error',function (err) {
+                        ajax();
+                        console.log(err)
+                        reject(err);
+                    });
+                    req.write('');
+                    req.end();
+                }
             }
         }
     })
