@@ -3,8 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
 </head>
 <body>
-我是2
+我是在页面获取个人信息
+
+<button>分享到给自己的朋友</button>
 </body>
+<script>
+    var vConsole = new VConsole();
+    function urlVal(str) {
+        var obj = {}
+        var arrs = str.slice(1).split('&');
+        for (var a = 0; a<arrs.length;a++) {
+            var t = arrs[a].split('=');
+            obj[t[0]] = t[1]
+        }
+        return obj
+    }
+    // urlVal(str)
+    var val = urlVal(window.location.search); // code 码
+    axios.get('http://www.888web888.com/user/getToken?code='+val.code)
+        .then(function (response) {
+            console.log(response.data);
+            axios.get(`https://api.weixin.qq.com/sns/userinfo?access_token=${response.data.access_token}&openid=${response.data.openid}&lang=zh_CN`)
+                .then(function (data) {
+                    console.log(data)
+                })
+            // tokenInfo.innerHTML = JSON.stringify(response.data);
+        })
+        .catch(function (error) {
+            tokenerror.innerHTML = error
+        });
+
+    console.log(window.WeixinJSBridge)
+
+
+    // 微信分享
+    axios.get('http://www.888web888.com/share/wx?code='+val.code+'&state='+val.state).then(function (val) {
+        console.log(val.data)
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wx7dbce6d1fa7ed00d', // 必填，公众号的唯一标识
+            timestamp: val.data.timestamp, // 必填，生成签名的时间戳
+            nonceStr: val.data.nonceStr, // 必填，生成签名的随机串
+            signature: val.data.signature,// 必填，签名
+            jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData', 'onMenuShareTimeline', 'onMenuShareAppMessage' ] // 必填，需要使用的JS接口列表
+        });
+        wx.ready(function(){
+            wx.checkJsApi({
+                jsApiList: ['updateAppMessageShareData','updateTimelineShareData', 'onMenuShareTimeline','onMenuShareAppMessage'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+                success: function(res) {
+                    // 以键值对的形式返回，可用的api值true，不可用为false
+                    // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
+                    console.log('ready成功')
+                    console.log(res)
+                }
+            });
+            // 分享给朋友
+            wx.onMenuShareTimeline({
+                title: '我是谁2页', // 分享标题
+                desc: '哈哈哈你猜猜猜', // 分享描述
+                link: 'http://www.888web888.com/1.html', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                imgUrl: 'http://www.888web888.com/img/default_car.png', // 分享图标
+                success: function () {
+                    // 设置成功
+                    console.log('成功回调')
+                },
+                cancel: function () {
+                    console.log('取消回调')
+                    // 用户取消分享后执行的回调函数
+                    // alert('cancel');
+                }
+            });
+            // 分享朋友圈
+            wx.onMenuShareAppMessage({
+                title: '我是谁2页', // 分享标题
+                link: 'http://www.888web888.com/1.html', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                imgUrl: 'http://www.888web888.com/img/default_car.png', // 分享图标
+                desc: '哈哈哈你猜猜猜', // 分享描述
+                success: function () {
+                    console.log('成功回调')
+                },
+                cancel: function () {
+                    console.log('取消回调')
+                    // 用户取消分享后执行的回调函数
+                    // alert('cancel');
+                }
+            });
+        });
+        wx.error(function (err) {
+            console.log('失败')
+            console.log(err);
+        })
+    })
+
+
+</script>
 </html>

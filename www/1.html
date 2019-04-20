@@ -78,7 +78,7 @@
         console.log(window.location.href);
         var href = window.location.href;
         // 请求分享初始化数据接口
-        console.log(location.href.split('#')[0])
+        console.log(location.href.split('#')[0]);
         axios.get('http://www.888web888.com/share/wx?code='+val.code+'&state='+val.state).then(function (val) {
             console.log(val.data)
             wx.config({
@@ -87,11 +87,11 @@
                 timestamp: val.data.timestamp, // 必填，生成签名的时间戳
                 nonceStr: val.data.nonceStr, // 必填，生成签名的随机串
                 signature: val.data.signature,// 必填，签名
-                jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData'] // 必填，需要使用的JS接口列表
+                jsApiList: ['updateAppMessageShareData', 'updateTimelineShareData', 'onMenuShareTimeline', 'onMenuShareAppMessage' ] // 必填，需要使用的JS接口列表
             });
             wx.ready(function(){
                 wx.checkJsApi({
-                    jsApiList: ['updateAppMessageShareData','updateTimelineShareData'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+                    jsApiList: ['updateAppMessageShareData','updateTimelineShareData', 'onMenuShareTimeline','onMenuShareAppMessage'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
                     success: function(res) {
                         // 以键值对的形式返回，可用的api值true，不可用为false
                         // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
@@ -99,7 +99,7 @@
                         console.log(res)
                     }
                 });
-
+                // 分享给朋友
                 wx.updateAppMessageShareData({
                     title: '我是谁', // 分享标题
                     desc: '哈哈哈你猜猜猜', // 分享描述
@@ -107,9 +107,29 @@
                     imgUrl: 'http://www.888web888.com/img/default_car.png', // 分享图标
                     success: function () {
                         // 设置成功
-                        console.log('设置成功')
+                        console.log('成功回调')
+                    },
+                    cancel: function () {
+                        console.log('取消回调')
+                        // 用户取消分享后执行的回调函数
+                        // alert('cancel');
                     }
-                })
+                });
+                // 分享朋友圈
+                wx.updateTimelineShareData({
+                    title: '我是谁', // 分享标题
+                    link: 'http://www.888web888.com/1.html', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                    imgUrl: 'http://www.888web888.com/img/default_car.png', // 分享图标
+                    desc: '哈哈哈你猜猜猜', // 分享描述
+                    success: function () {
+                        console.log('成功回调')
+                    },
+                    cancel: function () {
+                        console.log('取消回调')
+                        // 用户取消分享后执行的回调函数
+                        // alert('cancel');
+                    }
+                });
             });
             wx.error(function (err) {
                 console.log('失败')

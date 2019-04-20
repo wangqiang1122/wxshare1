@@ -42,7 +42,7 @@ exports.getAccessToken = function () {
                             arr.push(str)
                         });
                         res.on('end',()=>{
-                            console.log('执行了')
+                            console.log('执行了');
                             let buffer = Buffer.concat(arr);
                             AccessToken=(JSON.parse(buffer.toString()));
                             resolve(AccessToken);

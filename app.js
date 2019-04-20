@@ -6,7 +6,7 @@ let Wxconfig = require('./Wxconfig');
 const https = require('https');
 const url = require('url');
 var Router = require('koa-router');
-var router = new Router();
+var router = Router();
 const routerShare = require('./router/shareRouter');
 let accesstoken = '';
 server.listen(80);
@@ -14,6 +14,11 @@ server.listen(80);
 server.use(router.routes()).use(router.allowedMethods());
 // routerShare
 server.use(routerShare.routes()).use(routerShare.allowedMethods());
+
+// code码获取token和openId
+router.use('/user',require('./router/getAuthorizationToken'));
+
+
 
 
 router.get('/token', async function (ctx) {
