@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>Title</title>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
+</head>
+<body>
+
+</body>
+
+<script>
+    var shareUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7dbce6d1fa7ed00d&redirect_uri=http://www.888web888.com/6.html&response_type=code&scope=snsapi_base&state=1#wechat_redirect'
+    var vConsole = new VConsole();
+    function urlVal(str) {
+        var obj = {}
+        var arrs = str.slice(1).split('&');
+        for (var a = 0; a<arrs.length;a++) {
+            var t = arrs[a].split('=');
+            obj[t[0]] = t[1]
+        }
+        return obj
+    }
+    // urlVal(str)
+    var val = urlVal(window.location.search); // code 码
+    console.log(val);
+    console.log(!val.code)
+    if (!val.code) {
+        window.location.href = shareUrl;
+    } else {
+        axios.get('http://www.888web888.com/unionID/union?code='+val.code)
+            .then(function (response) {
+                tokenInfo.innerHTML = JSON.stringify(response.data);
+            })
+            .catch(function (error) {
+                tokenerror.innerHTML = error
+            });
+    }
+</script>
+</html>

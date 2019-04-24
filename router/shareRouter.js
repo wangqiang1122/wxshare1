@@ -10,9 +10,10 @@ router.get('/wx', async (ctx,next)=>{
     let nonceStr = 'Wm3WZYTPz0wzccnW';
     let timestamp = Math.round(new Date().getTime()/1000);
     var reg  = /.*(?=\?)/g;
-    console.log(ctx);
+    console.log(ctx.header.referer);
     console.log(ctx.header.referer.match(reg)[0]);
-    let url = `${ctx.header.referer.match(reg)[0]}?code=${ctx.query.code}&state=${ctx.query.state}`;
+    // let url = `${ctx.header.referer.match(reg)[0]}?code=${ctx.query.code}&state=${ctx.query.state}`;
+    let url = ctx.header.referer;
     let ticket = await new Promise((resolve)=>{
         request.get(`https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${acctoken.access_token}&type=jsapi`,function (error, response, body) {
             resolve(JSON.parse(response.body))

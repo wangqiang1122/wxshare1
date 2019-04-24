@@ -17,6 +17,8 @@ server.use(routerShare.routes()).use(routerShare.allowedMethods());
 
 // code码获取token和openId
 router.use('/user',require('./router/getAuthorizationToken'));
+router.use('/unionID',require('./router/getuserUnionID'));
+
 
 
 
